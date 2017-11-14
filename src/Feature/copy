@@ -1,0 +1,65 @@
+package Object_class;
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+public class Ob_train {
+	
+	public static ArrayList<ArrayList<String>> train = new ArrayList<ArrayList<String>>();
+	int enrollment_id;	
+	public ArrayList<ArrayList<String>> readData(File filename) throws IOException{
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
+		String str;
+		while((str = reader.readLine())!=null) {
+			String [] s1=str.split(",");
+			ArrayList<String> s = new ArrayList<String>();
+			for(int i=0;i<s1.length;i++)
+				s.add(s1[i]);
+			train.add(s);
+		}
+		
+		reader.close();
+		return train ;
+	}
+	
+	public Map<String,int[]>  count (ArrayList<ArrayList<String>> s) {
+		Map<String,int[]> map= new LinkedHashMap<String,int[]>();
+		String ser="0";
+		for(int i=1;i<s.size();i++) {		
+				String key=s.get(i).get(0);
+				int type[]=map.get(key);
+				if(type == null)
+					type=new int[2];
+				else {
+					if(s.get(i).get(2).equals(ser))
+						type[0]++;
+					else
+						type[1]++;
+					
+				}
+				map.put(key, type);
+		}
+		return map;
+			
+	}
+	
+	public static void main(String [] args) throws IOException {
+		Ob_train ob=new Ob_train();
+		String pathname="D:\\workplace\\Feature_Gen\\src\\train\\log_train.csv";
+		File filename=new File(pathname);
+		String outFilePath="D:\\workplace\\Feature_Gen\\src\\feature_data\\sourceCount.csv";
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outFilePath));
+		Map<String,int[]> result=new LinkedHashMap<String,int[]>();	
+		train=ob.readData(filename);
+		result=ob.count(train);
+		
+		for(Entry<String, int[]> entry : result.entrySet()) {
+			StringBuilder sb= new StringBuilder();
+			sb.append(entry.getKey()).append(",").append(entry.getValue()[0]).append(",").append(entry.getValue()[1]);
+			bw.write(sb.append("\n").toString());	
+		}
+		bw.close();
+		System.out.println("done");
+	}	
+		
+}
